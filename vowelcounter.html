@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vowel Counter</title>
+  <link rel="stylesheet" href="vowel.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Vowel Counter</h1>
+    <textarea id="inputText" placeholder="Enter text here..."></textarea>
+    <button id="countButton">Count Vowels</button>
+    <p id="result">The number of vowels in the text will appear here.</p>
+  </div>
+  <script>
+    function countVowels(inputString) {
+      // Convert the input string to lowercase to handle both lowercase and uppercase vowels
+      const str = inputString.toLowerCase();
+
+      // Define a regular expression to match vowels
+      const vowelRegex = /[aeiou]/g;
+
+      // Use match method with the regular expression to find all vowels in the string
+      const vowelsFound = str.match(vowelRegex);
+
+      // If vowels are found, return the count; otherwise, return 0
+      return vowelsFound ? vowelsFound.length : 0;
+    }
+
+    document.getElementById('countButton').addEventListener('click', function() {
+      const inputText = document.getElementById('inputText').value;
+      const result = countVowels(inputText);
+      document.getElementById('result').textContent = `The number of vowels in the text is: ${result}`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Expense Tracker</title>
+  <link rel="stylesheet" href="tracker.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Expense Tracker</h1>
+    <div>
+      <input type="text" id="expenseDescription" placeholder="Enter description">
+      <input type="number" id="expenseAmount" placeholder="Enter amount">
+      <input type="date" id="expenseDate">
+      <select id="expenseCategory">
+        <option value="Food">Food</option>
+        <option value="Transportation">Transportation</option>
+        <option value="Utilities">Utilities</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Others">Others</option>
+      </select>
+      <button id="addExpense">Add Expense</button>
+    </div>
+    <table id="expenseTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Amount</th>
+          <th>Category</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="expenseList">
+        <!-- Expenses will be added here -->
+      </tbody>
+    </table>
+    <p>Total Expenses: <span id="totalExpenses">0</span></p>
+  </div>
+
+  <script>
+      document.addEventListener('DOMContentLoaded', function () {
+  const expenseDescriptionInput = document.getElementById('expenseDescription');
+  const expenseAmountInput = document.getElementById('expenseAmount');
+  const expenseDateInput = document.getElementById('expenseDate');
+  const expenseCategoryInput = document.getElementById('expenseCategory');
+  const addExpenseButton = document.getElementById('addExpense');
+  const expenseTable = document.getElementById('expenseTable');
+  const expenseList = document.getElementById('expenseList');
+  const totalExpenses = document.getElementById('totalExpenses');
+
+  let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+  function renderExpenses() {
+    expenseList.innerHTML = '';
+    let total = 0;
+    expenses.forEach(function (expense, index) {
+      const row = expenseList.insertRow();
+      const cellDate = row.insertCell(0);
+      const cellDescription = row.insertCell(1);
+      const cellAmount = row.insertCell(2);
+      const cellCategory = row.insertCell(3);
+      const cellAction = row.insertCell(4);
+
+      cellDate.textContent = expense.date;
+      cellDescription.textContent = expense.description;
+      cellAmount.textContent = '$' + expense.amount.toFixed(2);
+      cellCategory.textContent = expense.category;
+
+      const editBtn = document.createElement('button');
+      editBtn.textContent = 'Edit';
+      editBtn.onclick = function () {
+        editExpense(index);
+      };
+      cellAction.appendChild(editBtn);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.onclick = function () {
+        deleteExpense(index);
+      };
+      cellAction.appendChild(deleteBtn);
+
+      total += parseFloat(expense.amount);
+    });
+    totalExpenses.textContent = total.toFixed(2);
+  }
+
+  renderExpenses();
+
+  function addExpense() {
+    const description = expenseDescriptionInput.value.trim();
+    const amount = parseFloat(expenseAmountInput.value);
+    const date = expenseDateInput.value;
+    const category = expenseCategoryInput.value;
+
+    if (description !== '' && !isNaN(amount) && amount > 0 && date !== '' && category !== '') {
+      expenses.push({ date, description, amount, category });
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+      renderExpenses();
+      clearInputs();
+    } else {
+      alert('Please enter valid details for the expense!');
+    }
+  }
+
+  function editExpense(index) {
+    const expenseToEdit = expenses[index];
+    expenseDescriptionInput.value = expenseToEdit.description;
+    expenseAmountInput.value = expenseToEdit.amount;
+    expenseDateInput.value = expenseToEdit.date;
+    expenseCategoryInput.value = expenseToEdit.category;
+
+    addExpenseButton.textContent = 'Update Expense';
+    addExpenseButton.onclick = function () {
+      updateExpense(index);
+    };
+  }
+
+  function updateExpense(index) {
+    const description = expenseDescriptionInput.value.trim();
+    const amount = parseFloat(expenseAmountInput.value);
+    const date = expenseDateInput.value;
+    const category = expenseCategoryInput.value;
+
+    if (description !== '' && !isNaN(amount) && amount > 0 && date !== '' && category !== '') {
+      expenses[index] = { date, description, amount, category };
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+      renderExpenses();
+      clearInputs();
+      addExpenseButton.textContent = 'Add Expense';
+      addExpenseButton.onclick = addExpense;
+    } else {
+      alert('Please enter valid details for the expense!');
+    }
+  }
+
+  window.deleteExpense = function (index) {
+    expenses.splice(index, 1);
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+    renderExpenses();
+  };
+
+  function clearInputs() {
+    expenseDescriptionInput.value = '';
+    expenseAmountInput.value = '';
+    expenseDateInput.value = '';
+    expenseCategoryInput.value = 'Food';
+  }
+
+  addExpenseButton.addEventListener('click', addExpense);
+});
+
+  </script>
+</body>
+</html>

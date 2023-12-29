@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Note Taker</title>
+    <link rel="stylesheet" href="note.css"> </head>
+<body>
+    <h1>Note Taker</h1>
+    <div id="note-form">
+        <label for="title">Title:</label>
+        <input type="text" id="title">
+        <label for="content">Content:</label>
+        <textarea id="content"></textarea>
+        <button id="add-note">Add Note</button>
+    </div>
+    <div id="note-list"></div>
+    <script>
+        // Get references to HTML elements
+const titleInput = document.getElementById("title");
+const contentInput = document.getElementById("content");
+const addNoteButton = document.getElementById("add-note");
+const noteList = document.getElementById("note-list");
+
+// Array to store notes
+const notes = [];
+// Function to delete a note
+function deleteNote(noteIndex) {
+    notes.splice(noteIndex, 1);
+    displayNotes();
+}
+
+// Function to edit a note
+function editNote(noteIndex) {
+    // Fill the form fields with the current note's data
+    titleInput.value = notes[noteIndex].title;
+    contentInput.value = notes[noteIndex].content;
+
+    // Change the button text to "Update Note"
+    addNoteButton.textContent = "Update Note";
+
+    // Add an event listener to the button to update the note
+    addNoteButton.addEventListener("click", () => {
+        notes[noteIndex].title = titleInput.value;
+        notes[noteIndex].content = contentInput.value;
+        addNoteButton.textContent = "Add Note"; // Reset button text
+        displayNotes();
+    });
+}
+
+// Function to display all notes in the list (with modifications for buttons)
+function displayNotes() {
+    noteList.innerHTML = ""; // Clear previous list items
+
+    notes.forEach((note, index) => {
+        const noteItem = document.createElement("li");
+        noteItem.textContent = `${note.title}`;
+
+        // Add buttons for deleting and editing
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.addEventListener("click", () => deleteNote(index));
+        noteItem.appendChild(deleteButton);
+
+        const editButton = document.createElement("button");
+        editButton.textContent = "Edit";
+        editButton.addEventListener("click", () => editNote(index));
+        noteItem.appendChild(editButton);
+
+        noteList.appendChild(noteItem);
+    });
+}
+
+// Function to add a new note
+function addNote() {
+    const title = titleInput.value;
+    const content = contentInput.value;
+
+    if (!title || !content) {
+        alert("Please enter both title and content.");
+        return;
+    }
+
+    notes.push({ title, content });
+    displayNotes();
+
+    // Clear form fields after adding
+    titleInput.value = "";
+    contentInput.value = "";
+}
+
+// Function to display all notes in the list
+function displayNotes() {
+    noteList.innerHTML = ""; // Clear previous list items
+
+    notes.forEach(note => {
+        const noteItem = document.createElement("li");
+        noteItem.textContent = `${note.title}`;
+        noteItem.addEventListener("click", () => {
+            alert(`${note.title}\n${note.content}`);
+        });
+        noteList.appendChild(noteItem);
+    });
+}
+
+// Add event listener to the "Add Note" button
+addNoteButton.addEventListener("click", addNote);
+
+// Initially display any existing notes
+displayNotes();
+
+    </script> 
+    </body>
+</html>
